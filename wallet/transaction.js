@@ -2,8 +2,19 @@ const ChainUtil = require('../chain-util');
 
 class Transaction {
   constructor() {
+    // { uuid }
     this.id = ChainUtil.id();
+    
+    // {
+    //   timestamp: DATE_NOW,
+    //   address: SENDER_PUBLICK_KEY,
+    //   amount: SENDER_BALANE,
+    //   signature: senderWallet.sign( OUTPUTS_HASH )
+    // }
     this.input = null;
+
+    // { amount: AMOUNT, address: SENDER_PUBLICK_KEY },
+    // { amount: AMOUNT, address: RECIPIENT_PUBLIC_KEY }
     this.outputs = [];
   }
 
