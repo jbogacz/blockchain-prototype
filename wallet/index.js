@@ -20,10 +20,10 @@ class Wallet {
   }
 
   createTransaction(recipient, amount, transactionPool) {
-    if (amount > this.balance) {
-      console.log(`Amount: ${amount} excedes current balance: ${this.balance}`);
-      return;
-    }
+    // if (amount > this.balance) {
+    //   console.log(`Amount: ${amount} excedes current balance: ${this.balance}`);
+    //   return;
+    // }
 
     let transaction = transactionPool.existingTransaction(this.publicKey);
 
@@ -31,9 +31,16 @@ class Wallet {
       transaction.update(this, recipient, amount);
     } else {
       transaction = Transaction.newTransaction(this, recipient, amount);
-      transactionPool.updateOrAddTransaction(transaction);
+      // transactionPool.updateOrAddTransaction(transaction);
+      transactionPool.addTransaction(transaction);
     }
     return transaction;
+  }
+
+  static blockchainWallet() {
+    const blockchainWallet = new this();
+    blockchainWallet.publicKey = 'blockchain-wallet';
+    return blockchainWallet;
   }
 }
 

@@ -16,14 +16,17 @@ describe('TransactionPool', () => {
       .toEqual(transaction);
   });
 
-  if('updates transaction in the poll', () => {
-    const oldTransaction = JSON.stringify(transaction);
+  it('updates transaction in the poll', () => {
     const newTransaction = transaction.update(wallet, 'r3c1-p13nt2', 40);
-    tp.updateOrAddTransaction(newTransaction);
  
     expect(tp.transactions.find(t => t.id === newTransaction.id).outputs
-      .find(output => outputs.address === 'r3c1-p13nt2').amount)
+      .find(output => output.address === 'r3c1-p13nt2').amount)
         .toEqual(40);
+  });
+
+  it('clears transaction pool', () => {
+    tp.clear();
+    expect(tp.transactions).toEqual([]);
   });
 
   describe('mixing valid and corrupt transactions', () => {

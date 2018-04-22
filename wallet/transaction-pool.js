@@ -5,6 +5,10 @@ class TransactionPool {
     this.transactions = [];
   }
 
+  addTransaction(transaction) {
+    this.transactions.push(transaction);
+  }
+
   updateOrAddTransaction(transaction) {
     let transactionWithId = this.transactions.find(t => t.id === transaction.id);
 
@@ -37,6 +41,10 @@ class TransactionPool {
 
       return transaction;
     });
+  }
+
+  clear() {
+    this.transactions = [];
   }
 }
 
