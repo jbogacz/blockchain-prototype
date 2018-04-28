@@ -6,6 +6,7 @@ class Block {
       this.timestamp = timestamp;
       this.lastHash = lastHash;
       this.hash = hash;
+      // data is an array of transactions
       this.data = data;
       this.nounce = nounce;
       this.difficulty = difficulty || DIFFICULTY;

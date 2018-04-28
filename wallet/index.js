@@ -19,22 +19,60 @@ class Wallet {
     return this.keyPair.sign(dataHash);
   }
 
-  createTransaction(recipient, amount, transactionPool) {
-    // if (amount > this.balance) {
-    //   console.log(`Amount: ${amount} excedes current balance: ${this.balance}`);
-    //   return;
-    // }
-
+  createTransaction(recipient, amount, blockchain, transactionPool) {
     let transaction = transactionPool.existingTransaction(this.publicKey);
 
     if (transaction) {
       transaction.update(this, recipient, amount);
     } else {
       transaction = Transaction.newTransaction(this, recipient, amount);
-      // transactionPool.updateOrAddTransaction(transaction);
       transactionPool.addTransaction(transaction);
     }
+
+    this.balance = this.calculateBalance(blockchain);
+
     return transaction;
+  }
+
+  calculateBalance(blockchain) {
+    let allTransactions = [];
+    let balance = this.balance;
+    
+    // collect all transactions
+    blockchain.chain.forEach(block => allTransactions.push(block.data));
+    
+    // collect only this wallet transactions looking at transaction output publicKey
+    const walletTransactions = allTransactions
+    .filter(transaction => transaction.input.address === this.publicKey);
+    
+    // retrieve timestamp of wallet's last transaction
+    // retrieve amount of wallet's last output transaction
+    let timestamp = 0;
+    if(walletTransactions.length > 0) {
+      
+      // retrieve last transaction
+      const lastTransaction = walletTransactions
+        .reduce((current, next) => 
+          next.input.timestamp > current.input.timestamp 
+            ? next 
+            : current
+          );
+      timestamp = lastTransaction.input.timestamp;
+      balance = lastTransaction.outputs.find(output => output.address === this.publicKey).amount; 
+    } 
+
+    // calculate all transactions that were transacted to the wallet after last wallet output transaction
+    allTransactions.forEach(transaction => {
+      if(transaction.input.timestamp > timestamp) {
+        transaction.outputs.forEach(output => {
+          if(output.address === this.publicKey) {
+            balance += output.amount;
+          }
+        });
+      }
+    });
+
+    return balance;
   }
 
   static blockchainWallet() {
