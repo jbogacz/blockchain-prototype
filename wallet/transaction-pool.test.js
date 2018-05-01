@@ -9,8 +9,8 @@ describe('TransactionPool', () => {
   beforeEach(() => {
     tp = new TransactionPool();
     wallet = new Wallet();
-    transaction = wallet.createTransaction('r3c1-p13nt1', 30, bc, tp);
     bc = new Blockchain()
+    transaction = wallet.createTransaction('r3c1-p13nt1', 30, bc, tp);
   });
 
   it('adds transaction to the pool', () => {

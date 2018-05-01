@@ -20,6 +20,8 @@ class Wallet {
   }
 
   createTransaction(recipient, amount, blockchain, transactionPool) {
+    this.balance = this.calculateBalance(blockchain);
+
     let transaction = transactionPool.existingTransaction(this.publicKey);
 
     if (transaction) {
@@ -29,7 +31,6 @@ class Wallet {
       transactionPool.addTransaction(transaction);
     }
 
-    this.balance = this.calculateBalance(blockchain);
 
     return transaction;
   }
@@ -39,11 +40,19 @@ class Wallet {
     let balance = this.balance;
     
     // collect all transactions
-    blockchain.chain.forEach(block => allTransactions.push(block.data));
+    blockchain.chain
+      .forEach(block => block.data
+        .forEach(transaction => { 
+          allTransactions.push(transaction)
+        }
+      )
+    );
     
     // collect only this wallet transactions looking at transaction output publicKey
     const walletTransactions = allTransactions
-    .filter(transaction => transaction.input.address === this.publicKey);
+      .filter(transaction => 
+        transaction.input.address === this.publicKey
+      );
     
     // retrieve timestamp of wallet's last transaction
     // retrieve amount of wallet's last output transaction
@@ -58,7 +67,9 @@ class Wallet {
             : current
           );
       timestamp = lastTransaction.input.timestamp;
-      balance = lastTransaction.outputs.find(output => output.address === this.publicKey).amount; 
+      balance = lastTransaction.outputs
+        .find(output => 
+          output.address === this.publicKey).amount; 
     } 
 
     // calculate all transactions that were transacted to the wallet after last wallet output transaction
