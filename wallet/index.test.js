@@ -58,8 +58,29 @@ describe('Wallet', () => {
       expect(wallet.calculateBalance(bc)).toEqual(INITIAL_BALANCE + (addBalance * repeatAdd));
     });
 
-    it('calculate balance for blockchain transactions matching the sender', () => {
+    it('calculates balance for blockchain transactions matching the sender', () => {
       expect(senderWallet.calculateBalance(bc)).toEqual(INITIAL_BALANCE - (addBalance * repeatAdd));
     });
+
+    describe('and the recipient conduct a transaction', () => {
+      let senderBalance, recipientBalan
+
+      beforeEach(() => {
+        tp.clear()
+        subtractBalance = 35;
+        wallet.createTransaction(senderWallet.publicKey, subtractBalance, bc, tp);
+        bc.addBlock(tp.transactions);
+      });
+
+      it('calculates balance for sender after reciepient has transacted', () => {
+        expect(senderWallet.calculateBalance(bc))
+          .toEqual(INITIAL_BALANCE - (addBalance * repeatAdd) + subtractBalance);
+      });
+
+      it('calculate recipient balance after reciepient has transacted', () => {
+        expect(wallet.calculateBalance(bc))
+          .toEqual(INITIAL_BALANCE + (addBalance * repeatAdd) - subtractBalance);
+      })
+    })
   });
 });
